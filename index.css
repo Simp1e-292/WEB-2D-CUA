@@ -1,0 +1,260 @@
+:root {
+    --bg-color: #f3f4f6;
+    --panel-bg: #ffffff;
+    --text-color: #1f2937;
+    --primary: #3b82f6;
+    --border-color: #e5e7eb;
+    --door-stroke: #111827;
+    --dim-red: #ef4444;
+    --dim-blue: #3b82f6;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 360px;
+    background-color: var(--panel-bg);
+    border-right: 1px solid var(--border-color);
+    padding: 24px;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+    overflow-y: auto;
+}
+
+.sidebar h1 {
+    font-size: 1.25rem;
+    margin-top: 0;
+    margin-bottom: 24px;
+    font-weight: 600;
+}
+
+.view-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+.view-toggle button {
+    flex: 1;
+    padding: 10px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #475569;
+    transition: all 0.2s;
+}
+.view-toggle button.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-row {
+    display: flex;
+    gap: 12px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.form-group input[type="number"], .form-group input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.form-group input[type="file"] {
+    font-size: 0.85rem;
+    padding: 8px;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.result-panel {
+    margin-top: 24px;
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.result-panel h3 {
+    margin-top: 0;
+    font-size: 1rem;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.result-value {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    background-color: #e2e8f0;
+    overflow: auto;
+}
+
+.canvas-container {
+    background-color: var(--panel-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+svg {
+    width: 100%;
+    height: 100%;
+}
+
+.door-line {
+    stroke: var(--door-stroke);
+    stroke-width: 2;
+    fill: none;
+    stroke-linejoin: round;
+}
+
+.door-fill {
+    fill: #fdfbf7;
+    stroke: var(--door-stroke);
+    stroke-width: 2;
+}
+
+.dim-line-red {
+    stroke: var(--dim-red);
+    stroke-width: 1.5;
+    fill: none;
+}
+
+.dim-text-red {
+    fill: var(--dim-red);
+    font-size: 32px;
+    font-weight: 600;
+    text-anchor: middle;
+}
+
+.dim-line-blue {
+    stroke: var(--dim-blue);
+    stroke-width: 1.5;
+    stroke-dasharray: 6 4;
+    fill: none;
+}
+
+.dim-text-blue {
+    fill: var(--dim-blue);
+    font-size: 24px;
+    font-weight: 600;
+    text-anchor: middle;
+    dominant-baseline: middle;
+}
+
+.panel-core path, .panel-core polygon, .panel-core rect, .panel-core line, .panel-core circle {
+    stroke: var(--door-stroke) !important;
+    stroke-width: 2 !important;
+    fill: none !important;
+    vector-effect: non-scaling-stroke;
+}
+
+.section-line {
+    stroke: var(--dim-red);
+    stroke-width: 1.5;
+    stroke-dasharray: 20 8 4 8;
+    fill: none;
+}
+
+.section-line-solid {
+    stroke: var(--dim-red);
+    stroke-width: 2.5;
+    fill: none;
+}
+
+.section-arrow {
+    fill: var(--dim-red);
+}
+
+.section-text {
+    fill: var(--dim-red);
+    font-size: 24px;
+    font-weight: bold;
+    text-anchor: middle;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+.checkbox-label {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.95rem !important;
+}
+
+.checkbox-label input {
+    width: 18px !important;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+}
+
+/* Hidden SVG for measuring bounding box */
+#hiddenSvgContainer {
+    position: absolute;
+    visibility: hidden;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}

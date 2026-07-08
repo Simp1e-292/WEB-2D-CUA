@@ -4,215 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parametric 2D Door Drawing</title>
-    <style>
-        :root {
-            --bg-color: #f3f4f6;
-            --panel-bg: #ffffff;
-            --text-color: #1f2937;
-            --primary: #3b82f6;
-            --border-color: #e5e7eb;
-            --door-stroke: #111827;
-            --dim-red: #ef4444;
-            --dim-blue: #3b82f6;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .sidebar {
-            width: 360px;
-            background-color: var(--panel-bg);
-            border-right: 1px solid var(--border-color);
-            padding: 24px;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-            z-index: 10;
-            overflow-y: auto;
-        }
-
-        .sidebar h1 {
-            font-size: 1.25rem;
-            margin-top: 0;
-            margin-bottom: 24px;
-            font-weight: 600;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 12px;
-        }
-
-        .form-row .form-group {
-            flex: 1;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        .form-group input[type="number"], .form-group input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 1rem;
-            box-sizing: border-box;
-            transition: border-color 0.2s;
-        }
-        
-        .form-group input[type="file"] {
-            font-size: 0.85rem;
-            padding: 8px;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        
-        .result-panel {
-            margin-top: 24px;
-            background: #f8fafc;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 16px;
-        }
-
-        .result-panel h3 {
-            margin-top: 0;
-            font-size: 1rem;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-        }
-        
-        .result-value {
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        .main-content {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 24px;
-            background-color: #e2e8f0;
-            overflow: auto;
-        }
-
-        .canvas-container {
-            background-color: var(--panel-bg);
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            padding: 20px;
-            box-sizing: border-box;
-            position: relative;
-        }
-
-        svg {
-            width: 100%;
-            height: 100%;
-        }
-
-        .door-line {
-            stroke: var(--door-stroke);
-            stroke-width: 2;
-            fill: none;
-            stroke-linejoin: round;
-        }
-        
-        .door-fill {
-            fill: #fdfbf7;
-            stroke: var(--door-stroke);
-            stroke-width: 2;
-        }
-
-        .dim-line-red {
-            stroke: var(--dim-red);
-            stroke-width: 1.5;
-            fill: none;
-        }
-
-        .dim-text-red {
-            fill: var(--dim-red);
-            font-size: 32px;
-            font-weight: 600;
-            text-anchor: middle;
-        }
-
-        .dim-line-blue {
-            stroke: var(--dim-blue);
-            stroke-width: 1.5;
-            stroke-dasharray: 6 4;
-            fill: none;
-        }
-
-        .dim-text-blue {
-            fill: var(--dim-blue);
-            font-size: 24px;
-            font-weight: 600;
-            text-anchor: middle;
-            dominant-baseline: middle;
-        }
-        
-        .panel-core path, .panel-core polygon, .panel-core rect, .panel-core line, .panel-core circle {
-            stroke: var(--door-stroke) !important;
-            stroke-width: 2 !important;
-            fill: none !important;
-            vector-effect: non-scaling-stroke;
-        }
-        
-        /* Hidden SVG for measuring bounding box */
-        #hiddenSvgContainer {
-            position: absolute;
-            visibility: hidden;
-            pointer-events: none;
-            width: 0;
-            height: 0;
-            overflow: hidden;
-        }
-    </style>
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
 
     <div class="sidebar">
         <h1>Thông Số Cửa</h1>
         
+        <div class="view-toggle" style="display: none;">
+        </div>
+
         <div class="form-row">
             <div class="form-group">
                 <label for="inputW">Chiều rộng (W) mm</label>
-                <input type="number" id="inputW" value="700" min="500" max="2000" step="1">
+                <input type="number" id="inputW" value="900" min="500" max="2000" step="1">
             </div>
             <div class="form-group">
                 <label for="inputH">Chiều cao (H) mm</label>
@@ -223,22 +28,31 @@
         <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 16px 0;">
         
         <div class="form-group">
-            <label for="inputFile">Tải file lõi Huỳnh (.svg)</label>
-            <input type="file" id="inputFile" accept=".svg">
+            <label for="selectFile">Chọn lõi Huỳnh có sẵn</label>
+            <select id="selectFile">
+                <option value="">-- Chọn lõi Huỳnh --</option>
+            </select>
             <small style="color: #64748b; font-size: 0.8rem; display: block; margin-top: 4px;">
-                *Kích thước sẽ tự động lấy từ tên file (vd: H10 210x1100.svg) nếu có.
+                *Dữ liệu tự động tải từ bộ sưu tập.
             </small>
         </div>
 
         <div class="form-row">
             <div class="form-group">
                 <label for="inputHuynhW">Rộng Huỳnh (mm)</label>
-                <input type="number" id="inputHuynhW" value="520" readonly style="background-color: #f1f5f9; color: #475569; cursor: not-allowed;" title="Kích thước lấy tự động từ lõi SVG">
+                <input type="number" id="inputHuynhW" value="520" step="0.1">
             </div>
             <div class="form-group">
                 <label for="inputHuynhH">Cao Huỳnh (mm)</label>
-                <input type="number" id="inputHuynhH" value="1600" readonly style="background-color: #f1f5f9; color: #475569; cursor: not-allowed;" title="Kích thước lấy tự động từ lõi SVG">
+                <input type="number" id="inputHuynhH" value="1720" step="0.1">
             </div>
+        </div>
+
+        <div class="form-group">
+            <label class="checkbox-label">
+                <input type="checkbox" id="showSections" checked>
+                Hiển thị ký hiệu mặt cắt (A-A, B-B)
+            </label>
         </div>
 
         <div class="result-panel">
@@ -286,65 +100,61 @@
         </div>
     </div>
 
+    <script src="svgData.js"></script>
     <script>
         const CONSTANTS = {
             frameTop: 50,    
             frameSide: 50,
             leafGap: 5,
             paddingX: 200,
-            paddingY: 200
+            paddingY: 200,
+            frameDepth: 130,
+            leafDepth: 50,
+            rabbetStep: 15,
+            rabbetDepth: 57
         };
 
-        let currentPanelSvgContent = `
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 214.401 294.302L 6.88924 294.302L 6.05418 293.467L 6.05418 257.977L 6.88924 257.142L 214.401 257.142L 215.236 257.977L 215.236 293.466L 214.401 294.301"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 4.8016 256.724L 4.8016 294.719L 5.63666 295.554L 215.653 295.554L 216.488 294.719L 216.488 256.724L 215.653 255.889L 5.63678 255.889L 4.8016 256.724"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 203.545 240.649L 202.71 241.484L 18.58 241.484L 17.745 240.649L 17.745 138.146L 18.58 137.311L 202.71 137.311L 203.545 138.146L 203.545 240.649"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 204.798 241.901L 203.963 242.737L 17.3274 242.737L 16.4924 241.902L 16.4924 136.894L 17.3274 136.059L 203.963 136.059L 204.798 136.893L 204.798 241.902"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 181.834 218.52L 180.581 219.773L 40.709 219.773L 39.4564 218.52L 39.4564 160.275L 40.709 159.023L 180.581 159.023L 181.834 160.275L 181.834 218.52"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 32.3587 150.672L 31.1059 151.924L 31.1059 226.871L 32.3585 228.124L 188.932 228.124L 190.184 226.871L 190.184 151.925L 188.932 150.672L 32.3585 150.672"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 181.834 628.533L 180.581 629.786L 40.709 629.786L 39.4564 628.533L 39.4564 332.923L 40.709 331.671L 180.581 331.671L 181.834 332.923L 181.834 628.533"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 32.3586 323.32L 31.1059 324.573L 31.1059 636.884L 32.3584 638.136L 188.932 638.136L 190.184 636.884L 190.184 324.573L 188.932 323.32L 32.3585 323.32"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 203.545 650.662L 202.71 651.497L 18.58 651.497L 17.7449 650.662L 17.745 310.794L 18.58 309.959L 202.71 309.959L 203.545 310.794L 203.545 650.662"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 204.798 651.915L 203.963 652.75L 17.3274 652.75L 16.4924 651.915L 16.4924 309.541L 17.3274 308.706L 203.963 308.706L 204.798 309.541L 204.798 651.915"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 215.236 703.479L 214.401 704.314L 6.88921 704.314L 6.05416 703.479L 6.05416 667.99L 6.88921 667.154L 214.401 667.154L 215.236 667.99L 215.236 703.479"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 5.63658 665.902L 4.80157 666.737L 4.80157 704.732L 5.63663 705.567L 215.653 705.567L 216.488 704.732L 216.488 666.737L 215.653 665.902L 5.63663 665.902"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 181.834 801.181L 180.581 802.434L 40.709 802.434L 39.4564 801.181L 39.4564 742.936L 40.709 741.683L 180.581 741.683L 181.834 742.936L 181.834 801.181"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 32.3585 733.333L 31.1059 734.585L 31.1059 809.532L 32.3584 810.784L 188.932 810.784L 190.184 809.532L 190.184 734.585L 188.932 733.333L 32.3584 733.333"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 203.545 823.31L 202.71 824.145L 18.58 824.145L 17.7449 823.31L 17.7449 720.807L 18.58 719.972L 202.71 719.972L 203.545 720.807L 203.545 823.31"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 204.798 824.562L 203.963 825.398L 17.3274 825.398L 16.4924 824.563L 16.4924 719.554L 17.3274 718.719L 203.963 718.719L 204.798 719.554L 204.798 824.563"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 207.303 716.214L 207.303 827.903L 13.9872 827.903L 13.9872 716.214L 207.303 716.214"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 207.303 306.201L 207.303 655.255L 13.9872 655.255L 13.9872 306.201L 207.303 306.201"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 207.303 133.553L 207.303 245.242L 13.9872 245.242L 13.9872 133.553L 207.303 133.553"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 216.488 707.028L 4.80157 707.028L 4.80157 837.088L 216.488 837.088L 216.488 707.028"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 216.488 297.016L 4.8016 297.016L 4.80157 664.44L 216.488 664.44L 216.488 297.016"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 216.488 124.368L 4.8016 124.368L 4.8016 254.428L 216.488 254.428L 216.488 124.368"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 217.95 124.159L 217.95 837.297L 216.697 838.55L 4.59281 838.55L 3.34023 837.297L 3.34025 124.159L 4.59284 122.906L 216.697 122.906L 217.95 124.159"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 216.697 121.654L 4.59284 121.654L 2.08767 124.159L 2.08764 837.297L 4.59281 839.802L 216.697 839.802L 219.202 837.297L 219.202 124.159L 216.697 121.654"/>
-            <path style="stroke-linejoin:round; stroke-linecap:round; fill:none" d="M 221.29 119.566L 221.29 841.89L 0 841.89L 2.54692e-05 119.566L 221.29 119.566"/>
-        `;
-        
-        let originalBoundingBox = { x: 0, y: 119.566, width: 221.29, height: 722.324 };
+        let currentPanelSvgContent = '';
+        let originalBoundingBox = { x: 0, y: 0, width: 0, height: 0 };
 
-        document.getElementById('inputFile').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+        function decodeBase64Utf8(base64) {
+            const binaryString = atob(base64);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return new TextDecoder('utf-8').decode(bytes);
+        }
 
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const text = event.target.result;
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(text, "image/svg+xml");
-                const svgNode = doc.querySelector('svg');
+        const selectFile = document.getElementById('selectFile');
+        if (typeof svgData !== 'undefined') {
+            const sortedKeys = Object.keys(svgData).sort();
+            for (let filename of sortedKeys) {
+                const option = document.createElement('option');
+                option.value = filename;
+                option.textContent = filename.replace(/\.svg$/i, '');
+                selectFile.appendChild(option);
+            }
+        }
+
+        selectFile.addEventListener('change', function() {
+            const filename = this.value;
+            if (!filename || !svgData[filename]) return;
+
+            const text = decodeBase64Utf8(svgData[filename]);
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(text, "image/svg+xml");
+            const svgNode = doc.querySelector('svg');
+            
+            if (svgNode) {
+                currentPanelSvgContent = svgNode.innerHTML;
                 
-                if (svgNode) {
-                    currentPanelSvgContent = svgNode.innerHTML;
-                    
-                    const measureSvg = document.getElementById('measureSvg');
-                    measureSvg.innerHTML = currentPanelSvgContent;
-                    
-                    try {
-                        const gElement = measureSvg.querySelector('g') || measureSvg;
-                        const bbox = gElement.getBBox();
+                const measureSvg = document.getElementById('measureSvg');
+                measureSvg.innerHTML = currentPanelSvgContent;
+                
+                try {
+                    const gElement = measureSvg.querySelector('g') || measureSvg;
+                    const bbox = gElement.getBBox();
                         if (bbox && bbox.width > 0 && bbox.height > 0) {
                             originalBoundingBox = {
                                 x: bbox.x,
@@ -357,20 +167,44 @@
                         console.warn("Lỗi tính bbox:", err);
                     }
 
-                    const filename = file.name;
+                    let filenameWithoutExt = filename.replace(/\.svg$/i, '').trim();
+                    let upperName = filenameWithoutExt.toUpperCase();
                     let parsedW = null;
                     let parsedH = null;
 
-                    const matchWxH = filename.match(/(\d+)\s*x\s*(\d+)/i);
+                    const matchWxH = filenameWithoutExt.match(/(\d+)\s*x\s*(\d+)/i);
+                    
                     if (matchWxH) {
                         parsedW = parseFloat(matchWxH[1]);
                         parsedH = parseFloat(matchWxH[2]);
                     } else {
-                        const matchW = filename.match(/_(\d+)/) || filename.match(/\s(\d+)/);
-                        if (matchW) {
-                            parsedW = parseFloat(matchW[1]);
-                            parsedH = parsedW * (originalBoundingBox.height / originalBoundingBox.width);
-                        } else {
+                        const dict = {
+                            'H1 PHAY': { w: 260, h: 1720 },
+                            'H1':      { w: 520, h: 1720 },
+                            'H2':      { w: 520, h: 1720 },
+                            'H3':      { w: 520, h: 1720 },
+                            'H4':      { w: 520, h: 1720 },
+                            'H4 PHAY': { w: 420, h: 1720 },
+                            'H5':      { w: 520, h: 1720 },
+                            'H6':      { w: 260, h: 1720 },
+                            'H7':      { w: 520, h: 1720 },
+                            'H8':      { w: 520, h: 1720 },
+                            'TĐ':      { w: 520, h: 1720 }
+                        };
+                        
+                        if (dict[upperName]) {
+                            parsedW = dict[upperName].w;
+                            parsedH = dict[upperName].h;
+                        }
+                        else if (upperName.startsWith('H9')) {
+                            const matchW = upperName.match(/_(\d+)/) || upperName.match(/\s(\d+)/);
+                            if (matchW) {
+                                parsedW = parseFloat(matchW[1]);
+                                parsedH = 1720;
+                            }
+                        }
+                        
+                        if (parsedW === null || parsedH === null) {
                             parsedW = originalBoundingBox.width;
                             parsedH = originalBoundingBox.height;
                         }
@@ -381,8 +215,6 @@
 
                     drawDoor();
                 }
-            };
-            reader.readAsText(file);
         });
 
         function drawDoor() {
@@ -414,121 +246,293 @@
             const svg = document.getElementById('doorSvg');
             svg.innerHTML = '';
             
-            const canvasW = W + paddingX * 2;
-            const canvasH = H + paddingY * 2;
-            svg.setAttribute('viewBox', `0 0 ${canvasW} ${canvasH}`);
-
             const startX = paddingX;
             const startY = paddingY;
-
             let content = '';
 
-            content += `<rect class="door-fill" x="${startX}" y="${startY}" width="${W}" height="${frameTop}" />`;
-            content += `<rect class="door-fill" x="${startX}" y="${startY + frameTop}" width="${frameSide}" height="${H - frameTop}" />`;
-            content += `<rect class="door-fill" x="${startX + W - frameSide}" y="${startY + frameTop}" width="${frameSide}" height="${H - frameTop}" />`;
-
+            let bboxW = originalBoundingBox.width;
+            let bboxH = originalBoundingBox.height;
+            if (bboxW === 0 || bboxH === 0) {
+                bboxW = 221.29; // Fallback to H1 default width
+                bboxH = 722.324; // Fallback to H1 default height
+            }
+            
+            const scaleX = huynhWidth / bboxW;
+            const scaleY = huynhHeight / bboxH;
+            
             const leafX = startX + frameSide + leafGap;
             const leafY = startY + frameTop + leafGap;
-            content += `<rect class="door-fill" x="${leafX}" y="${leafY}" width="${leafW}" height="${leafH}" />`;
-
-            const scaleX = huynhWidth / originalBoundingBox.width;
-            const scaleY = huynhHeight / originalBoundingBox.height;
-            
             const h1TargetX = leafX + doCanhNgang;
             const h1TargetY = leafY + doCanhDoc;
-            
-            content += `
-                <g class="panel-core" transform="translate(${h1TargetX}, ${h1TargetY}) scale(${scaleX}, ${scaleY}) translate(${-originalBoundingBox.x}, ${-originalBoundingBox.y})">
-                    ${currentPanelSvgContent}
-                </g>
-            `;
 
-            const dimOffset = 60;
+                content += `<rect class="door-fill" x="${startX}" y="${startY}" width="${W}" height="${frameTop}" />`;
+                content += `<rect class="door-fill" x="${startX}" y="${startY + frameTop}" width="${frameSide}" height="${H - frameTop}" />`;
+                content += `<rect class="door-fill" x="${startX + W - frameSide}" y="${startY + frameTop}" width="${frameSide}" height="${H - frameTop}" />`;
 
-            const drawDimRed = (x1, y1, x2, y2, text, textX, textY) => {
-                return `
-                    <line class="dim-line-red" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" />
-                    <line class="dim-line-red" x1="${x1}" y1="${y1-15}" x2="${x1}" y2="${y1+15}" />
-                    <line class="dim-line-red" x1="${x2}" y1="${y2-15}" x2="${x2}" y2="${y2+15}" />
-                    <text class="dim-text-red" x="${textX}" y="${textY}">${text}</text>
+                content += `<rect class="door-fill" x="${leafX}" y="${leafY}" width="${leafW}" height="${leafH}" />`;
+
+                content += `
+                    <g class="panel-core" transform="translate(${h1TargetX}, ${h1TargetY}) scale(${scaleX}, ${scaleY}) translate(${-originalBoundingBox.x}, ${-originalBoundingBox.y})">
+                        ${currentPanelSvgContent}
+                    </g>
                 `;
-            };
 
-            const drawDimBlue = (x1, y1, x2, y2, text, textX, textY, horizontal = true) => {
-                const tickLen = 10;
-                let t1x1, t1y1, t1x2, t1y2, t2x1, t2y1, t2x2, t2y2;
-                if(horizontal) {
-                    t1x1 = x1; t1y1 = y1 - tickLen; t1x2 = x1; t1y2 = y1 + tickLen;
-                    t2x1 = x2; t2y1 = y2 - tickLen; t2x2 = x2; t2y2 = y2 + tickLen;
-                } else {
-                    t1x1 = x1 - tickLen; t1y1 = y1; t1x2 = x1 + tickLen; t1y2 = y1;
-                    t2x1 = x2 - tickLen; t2y1 = y2; t2x2 = x2 + tickLen; t2y2 = y2;
+                const dimOffset = 60;
+
+                const drawDimRed = (x1, y1, x2, y2, text, textX, textY) => {
+                    return `
+                        <line class="dim-line-red" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" />
+                        <line class="dim-line-red" x1="${x1}" y1="${y1-15}" x2="${x1}" y2="${y1+15}" />
+                        <line class="dim-line-red" x1="${x2}" y1="${y2-15}" x2="${x2}" y2="${y2+15}" />
+                        <text class="dim-text-red" x="${textX}" y="${textY}">${text}</text>
+                    `;
+                };
+
+                const drawDimBlue = (x1, y1, x2, y2, text, textX, textY, horizontal = true) => {
+                    const tickLen = 10;
+                    let t1x1, t1y1, t1x2, t1y2, t2x1, t2y1, t2x2, t2y2;
+                    if(horizontal) {
+                        t1x1 = x1; t1y1 = y1 - tickLen; t1x2 = x1; t1y2 = y1 + tickLen;
+                        t2x1 = x2; t2y1 = y2 - tickLen; t2x2 = x2; t2y2 = y2 + tickLen;
+                    } else {
+                        t1x1 = x1 - tickLen; t1y1 = y1; t1x2 = x1 + tickLen; t1y2 = y1;
+                        t2x1 = x2 - tickLen; t2y1 = y2; t2x2 = x2 + tickLen; t2y2 = y2;
+                    }
+                    
+                    return `
+                        <line class="dim-line-blue" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" />
+                        <line class="dim-line-blue" x1="${t1x1}" y1="${t1y1}" x2="${t1x2}" y2="${t1y2}" />
+                        <line class="dim-line-blue" x1="${t2x1}" y1="${t2y1}" x2="${t2x2}" y2="${t2y2}" />
+                        <rect x="${textX - 30}" y="${textY - 15}" width="60" height="30" fill="white" opacity="0.9" rx="4"/>
+                        <text class="dim-text-blue" x="${textX}" y="${textY}">${text}</text>
+                    `;
+                };
+
+                content += drawDimRed(
+                    startX, startY - dimOffset, 
+                    startX + W, startY - dimOffset, 
+                    `W = ${W}`, 
+                    startX + W/2, startY - dimOffset - 20
+                );
+
+                content += `
+                    <line class="dim-line-red" x1="${startX - dimOffset}" y1="${startY}" x2="${startX - dimOffset}" y2="${startY + H}" />
+                    <line class="dim-line-red" x1="${startX - dimOffset - 15}" y1="${startY}" x2="${startX - dimOffset + 15}" y2="${startY}" />
+                    <line class="dim-line-red" x1="${startX - dimOffset - 15}" y1="${startY + H}" x2="${startX - dimOffset + 15}" y2="${startY + H}" />
+                    <text class="dim-text-red" x="${startX - dimOffset - 25}" y="${startY + H/2}" transform="rotate(-90 ${startX - dimOffset - 25},${startY + H/2})">H = ${H}</text>
+                `;
+
+                const cy = leafY + leafH/2;
+                content += drawDimBlue(
+                    leafX, cy, 
+                    leafX + doCanhNgang, cy, 
+                    doCanhNgang.toFixed(1), 
+                    leafX + doCanhNgang/2, cy,
+                    true
+                );
+
+                content += drawDimBlue(
+                    leafX + leafW - doCanhNgang, cy, 
+                    leafX + leafW, cy, 
+                    doCanhNgang.toFixed(1), 
+                    leafX + leafW - doCanhNgang/2, cy,
+                    true
+                );
+
+                const cx = leafX + leafW/2;
+                content += drawDimBlue(
+                    cx, leafY, 
+                    cx, leafY + doCanhDoc, 
+                    doCanhDoc.toFixed(1), 
+                    cx, leafY + doCanhDoc/2,
+                    false
+                );
+
+                content += drawDimBlue(
+                    cx, leafY + leafH - doCanhDoc, 
+                    cx, leafY + leafH, 
+                    doCanhDoc.toFixed(1), 
+                    cx, leafY + leafH - doCanhDoc/2,
+                    false
+                );
+
+                // TÙY CHỌN VẼ KÝ HIỆU MẶT CẮT (A-A, B-B)
+                const showSections = document.getElementById('showSections') ? document.getElementById('showSections').checked : false;
+                if (showSections) {
+                    const vCutX = startX + W * 0.35; // Cắt dọc ở 35% từ bên trái (cắt qua phần cánh và huỳnh)
+                    const vCutY1 = startY - 40;
+                    const vCutY2 = startY + H + 40;
+                    
+                    const hCutY = startY + H * 0.5; // Cắt ngang chính giữa cửa
+                    const hCutX1 = startX - 100; // Để vượt ra ngoài đường kích thước H (-60)
+                    const hCutX2 = startX + W + 60;
+
+                    content += `
+                        <!-- Dường cắt dọc (A-A) -->
+                        <line class="section-line" x1="${vCutX}" y1="${vCutY1}" x2="${vCutX}" y2="${vCutY2}" />
+                        
+                        <!-- Mũi tên trên (cắt dọc) -->
+                        <line class="section-line-solid" x1="${vCutX}" y1="${vCutY1}" x2="${vCutX}" y2="${vCutY1 + 20}" />
+                        <line class="section-line-solid" x1="${vCutX}" y1="${vCutY1}" x2="${vCutX - 35}" y2="${vCutY1}" />
+                        <polygon class="section-arrow" points="${vCutX-35},${vCutY1} ${vCutX-20},${vCutY1-6} ${vCutX-20},${vCutY1+6}" />
+                        <text class="section-text" x="${vCutX-15}" y="${vCutY1-15}">A</text>
+                        
+                        <!-- Mũi tên dưới (cắt dọc) -->
+                        <line class="section-line-solid" x1="${vCutX}" y1="${vCutY2}" x2="${vCutX}" y2="${vCutY2 - 20}" />
+                        <line class="section-line-solid" x1="${vCutX}" y1="${vCutY2}" x2="${vCutX - 35}" y2="${vCutY2}" />
+                        <polygon class="section-arrow" points="${vCutX-35},${vCutY2} ${vCutX-20},${vCutY2-6} ${vCutX-20},${vCutY2+6}" />
+                        <text class="section-text" x="${vCutX-15}" y="${vCutY2+30}">A</text>
+
+                        <!-- Đường cắt ngang (B-B) -->
+                        <line class="section-line" x1="${hCutX1}" y1="${hCutY}" x2="${hCutX2}" y2="${hCutY}" />
+                        
+                        <!-- Mũi tên trái (cắt ngang) -->
+                        <line class="section-line-solid" x1="${hCutX1}" y1="${hCutY}" x2="${hCutX1 + 20}" y2="${hCutY}" />
+                        <line class="section-line-solid" x1="${hCutX1}" y1="${hCutY}" x2="${hCutX1}" y2="${hCutY + 35}" />
+                        <polygon class="section-arrow" points="${hCutX1},${hCutY+35} ${hCutX1-6},${hCutY+20} ${hCutX1+6},${hCutY+20}" />
+                        <text class="section-text" x="${hCutX1-20}" y="${hCutY+20}">B</text>
+                        
+                        <!-- Mũi tên phải (cắt ngang) -->
+                        <line class="section-line-solid" x1="${hCutX2}" y1="${hCutY}" x2="${hCutX2 - 20}" y2="${hCutY}" />
+                        <line class="section-line-solid" x1="${hCutX2}" y1="${hCutY}" x2="${hCutX2}" y2="${hCutY + 35}" />
+                        <polygon class="section-arrow" points="${hCutX2},${hCutY+35} ${hCutX2-6},${hCutY+20} ${hCutX2+6},${hCutY+20}" />
+                        <text class="section-text" x="${hCutX2+20}" y="${hCutY+20}">B</text>
+                    `;
                 }
-                
-                return `
-                    <line class="dim-line-blue" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" />
-                    <line class="dim-line-blue" x1="${t1x1}" y1="${t1y1}" x2="${t1x2}" y2="${t1y2}" />
-                    <line class="dim-line-blue" x1="${t2x1}" y1="${t2y1}" x2="${t2x2}" y2="${t2y2}" />
-                    <rect x="${textX - 30}" y="${textY - 15}" width="60" height="30" fill="white" opacity="0.9" rx="4"/>
-                    <text class="dim-text-blue" x="${textX}" y="${textY}">${text}</text>
-                `;
+            
+            // Vẽ thêm 2 mặt cắt bên cạnh và bên dưới
+            content += drawSections(W, H);
+
+            // Cập nhật viewBox để bao trọn cả 3 hình chiếu
+            const canvasW = W + CONSTANTS.paddingX * 2 + 400 + CONSTANTS.frameDepth;
+            const canvasH = H + CONSTANTS.paddingY * 2 + 400 + CONSTANTS.frameDepth;
+            svg.setAttribute('viewBox', `0 0 ${canvasW} ${canvasH}`);
+            svg.innerHTML = content;
+        }
+
+        function drawSections(W, H) {
+            let content = '';
+            
+            const t = 1.5; // chiều dày nhôm
+            const fW = CONSTANTS.frameSide; // 50
+            const fT = CONSTANTS.frameTop;  // 50
+            const fD = CONSTANTS.frameDepth; // 130
+            const rW = CONSTANTS.rabbetStep; // 15
+            const rD = CONSTANTS.rabbetDepth; // 57
+            const gap = 3; // 3mm khe hở
+            const leafD = CONSTANTS.leafDepth; // 50
+            const inset = 2; // cánh lọt lòng 2mm so với mép ngoài
+
+            const drawDim = (x1, y1, x2, y2, text, textOffset, vertical = false) => {
+                const tick = 10;
+                let html = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ef4444" stroke-width="1.5" />`;
+                if (vertical) {
+                    html += `<line x1="${x1 - tick}" y1="${y1}" x2="${x1 + tick}" y2="${y1}" stroke="#ef4444" stroke-width="1.5" />`;
+                    html += `<line x1="${x2 - tick}" y1="${y2}" x2="${x2 + tick}" y2="${y2}" stroke="#ef4444" stroke-width="1.5" />`;
+                    html += `<text x="${x1 + textOffset}" y="${(y1 + y2)/2}" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 ${x1 + textOffset},${(y1 + y2)/2})" fill="#ef4444" font-size="14" font-weight="bold">${text}</text>`;
+                } else {
+                    html += `<line x1="${x1}" y1="${y1 - tick}" x2="${x1}" y2="${y1 + tick}" stroke="#ef4444" stroke-width="1.5" />`;
+                    html += `<line x1="${x2}" y1="${y2 - tick}" x2="${x2}" y2="${y2 + tick}" stroke="#ef4444" stroke-width="1.5" />`;
+                    html += `<text x="${(x1 + x2)/2}" y="${y1 + textOffset}" text-anchor="middle" dominant-baseline="middle" fill="#ef4444" font-size="14" font-weight="bold">${text}</text>`;
+                }
+                return html;
             };
 
-            content += drawDimRed(
-                startX, startY - dimOffset, 
-                startX + W, startY - dimOffset, 
-                `W = ${W}`, 
-                startX + W/2, startY - dimOffset - 20
-            );
+            const getFramePath = (x, y, mode) => {
+                let html = '';
+                const lip = 15;
+                if (mode === 'top') {
+                    html += `<path d="M ${x+lip} ${y} L ${x} ${y} L ${x} ${y+fW} L ${x+fD-rD} ${y+fW} L ${x+fD-rD} ${y+fW-rW} L ${x+fD} ${y+fW-rW} L ${x+fD} ${y} L ${x+fD-lip} ${y}" fill="none" stroke="#0ea5e9" stroke-width="1.5"/>`;
+                    html += `<path d="M ${x+lip} ${y+t} L ${x+t} ${y+t} L ${x+t} ${y+fW-t} L ${x+fD-rD-t} ${y+fW-t} L ${x+fD-rD-t} ${y+fW-rW-t} L ${x+fD-t} ${y+fW-rW-t} L ${x+fD-t} ${y+t} L ${x+fD-lip} ${y+t}" fill="none" stroke="#0ea5e9" stroke-width="1.5"/>`;
+                } else if (mode === 'left') {
+                    html += `<path d="M ${x} ${y+lip} L ${x} ${y} L ${x+fW-rW} ${y} L ${x+fW-rW} ${y+rD} L ${x+fW} ${y+rD} L ${x+fW} ${y+fD} L ${x} ${y+fD} L ${x} ${y+fD-lip}" fill="none" stroke="#0ea5e9" stroke-width="1.5"/>`;
+                    html += `<path d="M ${x+t} ${y+lip} L ${x+t} ${y+t} L ${x+fW-rW-t} ${y+t} L ${x+fW-rW-t} ${y+rD+t} L ${x+fW-t} ${y+rD+t} L ${x+fW-t} ${y+fD-t} L ${x+t} ${y+fD-t} L ${x+t} ${y+fD-lip}" fill="none" stroke="#0ea5e9" stroke-width="1.5"/>`;
+                } else if (mode === 'right') {
+                    html += `<path d="M ${x+fW} ${y+lip} L ${x+fW} ${y} L ${x+rW} ${y} L ${x+rW} ${y+rD} L ${x} ${y+rD} L ${x} ${y+fD} L ${x+fW} ${y+fD} L ${x+fW} ${y+fD-lip}" fill="none" stroke="#0ea5e9" stroke-width="1.5"/>`;
+                    html += `<path d="M ${x+fW-t} ${y+lip} L ${x+fW-t} ${y+t} L ${x+rW+t} ${y+t} L ${x+rW+t} ${y+rD+t} L ${x+t} ${y+rD+t} L ${x+t} ${y+fD-t} L ${x+fW-t} ${y+fD-t} L ${x+fW-t} ${y+fD-lip}" fill="none" stroke="#0ea5e9" stroke-width="1.5"/>`;
+                }
+                return html;
+            };
 
-            content += `
-                <line class="dim-line-red" x1="${startX - dimOffset}" y1="${startY}" x2="${startX - dimOffset}" y2="${startY + H}" />
-                <line class="dim-line-red" x1="${startX - dimOffset - 15}" y1="${startY}" x2="${startX - dimOffset + 15}" y2="${startY}" />
-                <line class="dim-line-red" x1="${startX - dimOffset - 15}" y1="${startY + H}" x2="${startX - dimOffset + 15}" y2="${startY + H}" />
-                <text class="dim-text-red" x="${startX - dimOffset - 25}" y="${startY + H/2}" transform="rotate(-90 ${startX - dimOffset - 25},${startY + H/2})">H = ${H}</text>
-            `;
+            const getHollowRect = (x, y, w, h) => {
+                let html = '';
+                html += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f8fafc" stroke="#0ea5e9" stroke-width="1.5"/>`;
+                html += `<rect x="${x+t}" y="${y+t}" width="${w-2*t}" height="${h-2*t}" fill="none" stroke="#0ea5e9" stroke-width="1.5"/>`;
+                return html;
+            };
 
-            const cy = leafY + leafH/2;
-            content += drawDimBlue(
-                leafX, cy, 
-                leafX + doCanhNgang, cy, 
-                doCanhNgang.toFixed(1), 
-                leafX + doCanhNgang/2, cy,
-                true
-            );
+            // --- BẢN VẼ MẶT CẮT NGANG (B-B) (Hình chiếu bằng) ---
+            const startX = CONSTANTS.paddingX;
+            const startY = CONSTANTS.paddingY + H + 250;
+            
+            // Khuôn trái
+            content += getFramePath(startX, startY, 'left');
+            // Khuôn phải
+            content += getFramePath(startX + W - fW, startY, 'right');
+            
+            // Cánh
+            const leafX = startX + fW - rW + gap;
+            const leafW = W - (fW - rW)*2 - gap*2;
+            const leafY = startY + inset;
+            content += getHollowRect(leafX, leafY, leafW, leafD);
 
-            content += drawDimBlue(
-                leafX + leafW - doCanhNgang, cy, 
-                leafX + leafW, cy, 
-                doCanhNgang.toFixed(1), 
-                leafX + leafW - doCanhNgang/2, cy,
-                true
-            );
+            // Dim Mặt cắt ngang
+            content += drawDim(startX, startY - 30, startX + W, startY - 30, W, -15);
+            content += drawDim(startX + fW - rW, startY + fD + 30, startX + W - (fW - rW), startY + fD + 30, W - (fW - rW)*2, 15); // Thông thuỷ
+            content += drawDim(leafX, leafY + leafD + 60, leafX + leafW, leafY + leafD + 60, leafW.toFixed(1), 15); // Chiều rộng cánh
 
-            const cx = leafX + leafW/2;
-            content += drawDimBlue(
-                cx, leafY, 
-                cx, leafY + doCanhDoc, 
-                doCanhDoc.toFixed(1), 
-                cx, leafY + doCanhDoc/2,
-                false
-            );
+            // --- BẢN VẼ MẶT CẮT DỌC (A-A) (Hình chiếu cạnh) ---
+            const vStartX = CONSTANTS.paddingX + W + 250;
+            const vStartY = CONSTANTS.paddingY; 
 
-            content += drawDimBlue(
-                cx, leafY + leafH - doCanhDoc, 
-                cx, leafY + leafH, 
-                doCanhDoc.toFixed(1), 
-                cx, leafY + leafH - doCanhDoc/2,
-                false
-            );
+            // Khuôn trên
+            content += getFramePath(vStartX, vStartY, 'top');
+            
+            // Cánh
+            const vLeafY = vStartY + fT - rW + gap;
+            const vLeafH = H - (fT - rW) - gap - 5; // Trừ khe hở dưới chân 5mm
+            const vLeafX = vStartX + fD - leafD - inset;
+            content += getHollowRect(vLeafX, vLeafY, leafD, vLeafH);
 
-            svg.innerHTML = content;
+            // Nền đất
+            content += `<line x1="${vStartX - 50}" y1="${vStartY + H}" x2="${vStartX + fD + 50}" y2="${vStartY + H}" stroke="#94a3b8" stroke-width="3"/>`;
+
+            // Dim Mặt cắt dọc
+            content += drawDim(vStartX - 30, vStartY, vStartX - 30, vStartY + H, H, -15, true);
+            content += drawDim(vStartX + fD + 30, vStartY + fT - rW, vStartX + fD + 30, vStartY + H, H - (fT - rW), 15, true); // Thông thuỷ
+            content += drawDim(vStartX + fD + 60, vLeafY, vStartX + fD + 60, vLeafY + vLeafH, vLeafH.toFixed(1), 15, true); // Chiều cao cánh
+
+            // Tiêu đề
+            content += `<text x="${startX + W/2}" y="${startY + fD + 100}" text-anchor="middle" font-family="monospace" font-size="20" font-weight="bold" fill="#64748b">MẶT CẮT NGANG B-B</text>`;
+            content += `<text x="${vStartX + fD/2}" y="${vStartY + H + 80}" text-anchor="middle" font-family="monospace" font-size="20" font-weight="bold" fill="#64748b">MẶT CẮT DỌC A-A</text>`;
+
+            return content;
+        }
+
+
+        if (document.getElementById('btn3D')) {
+            document.getElementById('btn3D').addEventListener('click', () => {
+                currentViewMode = '3D';
+                document.getElementById('btn3D').classList.add('active');
+                document.getElementById('btn2D').classList.remove('active');
+                drawDoor();
+            });
         }
 
         document.getElementById('inputW').addEventListener('input', drawDoor);
         document.getElementById('inputH').addEventListener('input', drawDoor);
+        document.getElementById('inputHuynhW').addEventListener('input', drawDoor);
+        document.getElementById('inputHuynhH').addEventListener('input', drawDoor);
+        if (document.getElementById('showSections')) {
+            document.getElementById('showSections').addEventListener('change', drawDoor);
+        }
 
-        drawDoor();
+        if (typeof svgData !== 'undefined' && svgData['H1.svg']) {
+            selectFile.value = 'H1.svg';
+            selectFile.dispatchEvent(new Event('change'));
+        } else {
+            drawDoor();
+        }
     </script>
 </body>
 </html>
