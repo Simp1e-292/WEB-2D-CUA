@@ -771,6 +771,12 @@
             return pt.matrixTransform(doorSvg.getScreenCTM().inverse());
         }
 
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isDimMode) {
+                toggleDimMode();
+            }
+        });
+
         if (typeof svgData !== 'undefined' && svgData['H1.svg']) {
             selectFile.value = 'H1.svg';
             selectFile.dispatchEvent(new Event('change'));
