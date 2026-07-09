@@ -146,6 +146,21 @@
         let currentPanelSvgContent = '';
         let originalBoundingBox = { x: 0, y: 0, width: 0, height: 0 };
 
+        const drawDimGlobal = (x1, y1, x2, y2, text, textOffset, vertical = false) => {
+            const tick = 10;
+            let html = `<line class="dim-line" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" />`;
+            if (vertical) {
+                html += `<line class="dim-line" x1="${x1 - tick}" y1="${y1}" x2="${x1 + tick}" y2="${y1}" />`;
+                html += `<line class="dim-line" x1="${x2 - tick}" y1="${y2}" x2="${x2 + tick}" y2="${y2}" />`;
+                html += `<text class="dim-text-red" x="${x1 + textOffset}" y="${(y1 + y2)/2}" transform="rotate(-90 ${x1 + textOffset},${(y1 + y2)/2})">${text}</text>`;
+            } else {
+                html += `<line class="dim-line" x1="${x1}" y1="${y1 - tick}" x2="${x1}" y2="${y1 + tick}" />`;
+                html += `<line class="dim-line" x1="${x2}" y1="${y2 - tick}" x2="${x2}" y2="${y2 + tick}" />`;
+                html += `<text class="dim-text-red" x="${(x1 + x2)/2}" y="${y1 + textOffset}">${text}</text>`;
+            }
+            return html;
+        };
+
         function decodeBase64Utf8(base64) {
             const binaryString = atob(base64);
             const bytes = new Uint8Array(binaryString.length);
