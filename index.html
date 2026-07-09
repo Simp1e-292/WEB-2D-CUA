@@ -732,6 +732,45 @@
             document.getElementById('showSections').addEventListener('change', drawDoor);
         }
 
+        function toggleDimMode() {
+            isDimMode = !isDimMode;
+            const btn = document.getElementById('btnDim');
+            const statusText = document.getElementById('dimStatusText');
+            if (isDimMode) {
+                btn.style.background = 'var(--primary)';
+                btn.style.color = 'white';
+                btn.innerText = 'Đang bật Dim... (Click điểm đầu)';
+                statusText.style.display = 'block';
+                const doorSvg = document.getElementById('doorSvg');
+                doorSvg.style.cursor = 'crosshair';
+                dimState = 0;
+            } else {
+                btn.style.background = 'white';
+                btn.style.color = 'var(--primary)';
+                btn.innerText = 'Bật công cụ Dim tự do';
+                statusText.style.display = 'none';
+                const doorSvg = document.getElementById('doorSvg');
+                doorSvg.style.cursor = 'grab';
+                drawDoor(); // Xoá các đường preview đứt nét
+            }
+        }
+
+        function clearCustomDims() {
+            if (confirm("Bạn có chắc muốn xoá toàn bộ Dim tự tạo không?")) {
+                customDims = [];
+                localStorage.setItem('customDims', JSON.stringify(customDims));
+                drawDoor();
+            }
+        }
+
+        function getSvgPoint(evt) {
+            const doorSvg = document.getElementById('doorSvg');
+            const pt = doorSvg.createSVGPoint();
+            pt.x = evt.clientX;
+            pt.y = evt.clientY;
+            return pt.matrixTransform(doorSvg.getScreenCTM().inverse());
+        }
+
         if (typeof svgData !== 'undefined' && svgData['H1.svg']) {
             selectFile.value = 'H1.svg';
             selectFile.dispatchEvent(new Event('change'));
