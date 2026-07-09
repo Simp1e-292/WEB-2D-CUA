@@ -445,49 +445,7 @@
                     false
                 );
 
-                // TÙY CHỌN VẼ KÝ HIỆU MẶT CẮT (A-A, B-B)
-                const showSections = document.getElementById('showSections') ? document.getElementById('showSections').checked : false;
-                if (showSections) {
-                    const vCutX = startX + W * 0.35; // Cắt dọc ở 35% từ bên trái (cắt qua phần cánh và huỳnh)
-                    const vCutY1 = startY - 40;
-                    const vCutY2 = startY + H + 40;
-                    
-                    const hCutY = startY + H * 0.5; // Cắt ngang chính giữa cửa
-                    const hCutX1 = startX - 100; // Để vượt ra ngoài đường kích thước H (-60)
-                    const hCutX2 = startX + W + 60;
-
-                    content += `
-                        <!-- Dường cắt dọc (A-A) -->
-                        <line class="section-line" x1="${vCutX}" y1="${vCutY1}" x2="${vCutX}" y2="${vCutY2}" />
-                        
-                        <!-- Mũi tên trên (cắt dọc) -->
-                        <line class="section-line-solid" x1="${vCutX}" y1="${vCutY1}" x2="${vCutX}" y2="${vCutY1 + 20}" />
-                        <line class="section-line-solid" x1="${vCutX}" y1="${vCutY1}" x2="${vCutX - 35}" y2="${vCutY1}" />
-                        <polygon class="section-arrow" points="${vCutX-35},${vCutY1} ${vCutX-20},${vCutY1-6} ${vCutX-20},${vCutY1+6}" />
-                        <text class="section-text" x="${vCutX-15}" y="${vCutY1-15}">A</text>
-                        
-                        <!-- Mũi tên dưới (cắt dọc) -->
-                        <line class="section-line-solid" x1="${vCutX}" y1="${vCutY2}" x2="${vCutX}" y2="${vCutY2 - 20}" />
-                        <line class="section-line-solid" x1="${vCutX}" y1="${vCutY2}" x2="${vCutX - 35}" y2="${vCutY2}" />
-                        <polygon class="section-arrow" points="${vCutX-35},${vCutY2} ${vCutX-20},${vCutY2-6} ${vCutX-20},${vCutY2+6}" />
-                        <text class="section-text" x="${vCutX-15}" y="${vCutY2+30}">A</text>
-
-                        <!-- Đường cắt ngang (B-B) -->
-                        <line class="section-line" x1="${hCutX1}" y1="${hCutY}" x2="${hCutX2}" y2="${hCutY}" />
-                        
-                        <!-- Mũi tên trái (cắt ngang) -->
-                        <line class="section-line-solid" x1="${hCutX1}" y1="${hCutY}" x2="${hCutX1 + 20}" y2="${hCutY}" />
-                        <line class="section-line-solid" x1="${hCutX1}" y1="${hCutY}" x2="${hCutX1}" y2="${hCutY + 35}" />
-                        <polygon class="section-arrow" points="${hCutX1},${hCutY+35} ${hCutX1-6},${hCutY+20} ${hCutX1+6},${hCutY+20}" />
-                        <text class="section-text" x="${hCutX1-20}" y="${hCutY+20}">B</text>
-                        
-                        <!-- Mũi tên phải (cắt ngang) -->
-                        <line class="section-line-solid" x1="${hCutX2}" y1="${hCutY}" x2="${hCutX2 - 20}" y2="${hCutY}" />
-                        <line class="section-line-solid" x1="${hCutX2}" y1="${hCutY}" x2="${hCutX2}" y2="${hCutY + 35}" />
-                        <polygon class="section-arrow" points="${hCutX2},${hCutY+35} ${hCutX2-6},${hCutY+20} ${hCutX2+6},${hCutY+20}" />
-                        <text class="section-text" x="${hCutX2+20}" y="${hCutY+20}">B</text>
-                    `;
-                }
+                // TÙY CHỌN VẼ KÝ HIỆU MẶT CẮT (A-A, B-B) ĐÃ BỊ ẨN THEO YÊU CẦU
             
             // Vẽ thêm 2 mặt cắt bên cạnh và bên dưới
             content += drawSections(W, H);
