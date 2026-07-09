@@ -50,9 +50,26 @@
 
         <div class="form-group">
             <label class="checkbox-label">
-                <input type="checkbox" id="showSections" checked>
+                <input type="checkbox" id="showSections" checked onchange="drawDoor()">
                 Hiển thị ký hiệu mặt cắt (A-A, B-B)
             </label>
+        </div>
+
+        <div style="margin-top: 16px; border-top: 1px solid #e2e8f0; padding-top: 16px; margin-bottom: 16px;">
+            <h3 style="margin-top: 0; font-size: 1rem; margin-bottom: 12px; color: #334155;">Công cụ kích thước (Dim)</h3>
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label class="checkbox-label" style="display: flex; align-items: center; font-weight: normal;">
+                    <input type="checkbox" id="hideAutoDim" onchange="drawDoor()" style="width: auto; margin-right: 8px;">
+                    Ẩn Dim tự động
+                </label>
+            </div>
+            <button id="btnDim" onclick="toggleDimMode()" style="width: 100%; padding: 8px; background: white; border: 1px solid var(--primary); color: var(--primary); border-radius: 6px; font-weight: 600; cursor: pointer; margin-bottom: 8px; transition: all 0.2s;">
+                Bật công cụ Dim tự do
+            </button>
+            <button onclick="clearCustomDims()" style="width: 100%; padding: 8px; background: white; border: 1px solid #ef4444; color: #ef4444; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                Xoá toàn bộ Dim tự tạo
+            </button>
+            <small id="dimStatusText" style="display: none; color: #ef4444; margin-top: 8px; line-height: 1.4;">* Đang ở chế độ Dim.<br/>Tạm khóa kéo bản vẽ (Pan).<br/>Chuột lăn để Zoom bình thường.</small>
         </div>
 
         <div class="result-panel">
@@ -230,24 +247,87 @@
                 }
         });
 
-        let vbX = 0, vbY = 0, vbW = 0, vbH = 0;
-        let isPanning = false;
-        let startPanX = 0, startPanY = 0;
-        const doorSvg = document.getElementById('doorSvg');
-        doorSvg.style.cursor = 'grab';
-
         doorSvg.addEventListener('mousedown', (e) => {
+            if (isDimMode) {
+                const pt = getSvgPoint(e);
+                if (dimState === 0) {
+                    p1 = {x: pt.x, y: pt.y};
+                    dimState = 1;
+                } else if (dimState === 1) {
+                    p2 = {x: pt.x, y: pt.y};
+                    dimState = 2;
+                } else if (dimState === 2) {
+                    const ptOffset = getSvgPoint(e);
+                    const isVertical = Math.abs(p2.y - p1.y) >= Math.abs(p2.x - p1.x);
+                    let measuredValue = isVertical ? Math.abs(p2.y - p1.y) : Math.abs(p2.x - p1.x);
+                    measuredValue = Math.round(measuredValue * 10) / 10;
+
+                    const userText = prompt("Nhập nội dung hiển thị (để trống để dùng kích thước chuẩn):", measuredValue);
+                    if (userText !== null) {
+                        const finalTxt = userText.trim() === "" ? measuredValue.toString() : userText;
+                        let offsetValue;
+                        if (isVertical) {
+                            const lineX = (p1.x + p2.x)/2;
+                            offsetValue = ptOffset.x - lineX;
+                        } else {
+                            const lineY = (p1.y + p2.y)/2;
+                            offsetValue = ptOffset.y - lineY;
+                        }
+
+                        customDims.push({
+                            x1: p1.x, y1: p1.y,
+                            x2: p2.x, y2: p2.y,
+                            text: finalTxt,
+                            textOffset: offsetValue,
+                            vertical: isVertical
+                        });
+                        localStorage.setItem('customDims', JSON.stringify(customDims));
+                    }
+                    
+                    dimState = 0;
+                    drawDoor(); 
+                }
+                return;
+            }
+
             isPanning = true;
             startPanX = e.clientX;
             startPanY = e.clientY;
             doorSvg.style.cursor = 'grabbing';
         });
 
-        window.addEventListener('mousemove', (e) => {
+        doorSvg.addEventListener('mousemove', (e) => {
+            if (isDimMode) {
+                if (dimState === 1) {
+                    const pt = getSvgPoint(e);
+                    drawDoor(true);
+                    const tempHtml = `<line x1="${p1.x}" y1="${p1.y}" x2="${pt.x}" y2="${pt.y}" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5,5"/>`;
+                    doorSvg.insertAdjacentHTML('beforeend', tempHtml);
+                } else if (dimState === 2) {
+                    const pt = getSvgPoint(e);
+                    const isVertical = Math.abs(p2.y - p1.y) >= Math.abs(p2.x - p1.x);
+                    let measuredValue = isVertical ? Math.abs(p2.y - p1.y) : Math.abs(p2.x - p1.x);
+                    measuredValue = Math.round(measuredValue * 10) / 10;
+                    
+                    let offsetValue;
+                    if (isVertical) {
+                        const lineX = (p1.x + p2.x)/2;
+                        offsetValue = pt.x - lineX;
+                    } else {
+                        const lineY = (p1.y + p2.y)/2;
+                        offsetValue = pt.y - lineY;
+                    }
+                    
+                    drawDoor(true);
+                    const tempHtml = drawDimGlobal(p1.x, p1.y, p2.x, p2.y, measuredValue, offsetValue, isVertical);
+                    doorSvg.insertAdjacentHTML('beforeend', tempHtml);
+                }
+                return;
+            }
+
             if (!isPanning) return;
             e.preventDefault();
             const rect = doorSvg.getBoundingClientRect();
-            // preserveAspectRatio="xMidYMid meet" (default)
             const ratio = Math.max(vbW / rect.width, vbH / rect.height);
             const dx = (e.clientX - startPanX) * ratio;
             const dy = (e.clientY - startPanY) * ratio;
@@ -270,12 +350,11 @@
         doorSvg.addEventListener('wheel', (e) => {
             e.preventDefault();
             const zoomSensitivity = 0.1;
-            const delta = e.deltaY > 0 ? 1 : -1; // cuộn xuống = zoom out = tăng vbW
+            const delta = e.deltaY > 0 ? 1 : -1; 
             
             const rect = doorSvg.getBoundingClientRect();
             const ratio = Math.max(vbW / rect.width, vbH / rect.height);
             
-            // Toạ độ chuột trong không gian SVG
             const mouseX = vbX + (e.clientX - rect.left) * ratio;
             const mouseY = vbY + (e.clientY - rect.top) * ratio;
             
@@ -283,7 +362,6 @@
             const newVbW = vbW * zoomFactor;
             const newVbH = vbH * zoomFactor;
             
-            // Giới hạn zoom
             if (newVbW > 100 && newVbW < 20000) {
                 vbX = mouseX - (mouseX - vbX) * zoomFactor;
                 vbY = mouseY - (mouseY - vbY) * zoomFactor;
@@ -294,7 +372,6 @@
         }, { passive: false });
 
         doorSvg.addEventListener('dblclick', () => {
-            // Reset view
             const W = parseFloat(document.getElementById('inputW').value) || 0;
             const H = parseFloat(document.getElementById('inputH').value) || 0;
             const canvasW = W + CONSTANTS.paddingX * 2 + 400 + CONSTANTS.frameDepth;
@@ -306,11 +383,12 @@
             doorSvg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
         });
 
-        function drawDoor() {
+        function drawDoor(isPreview = false) {
             const W = parseFloat(document.getElementById('inputW').value) || 0;
             const H = parseFloat(document.getElementById('inputH').value) || 0;
             const huynhWidth = parseFloat(document.getElementById('inputHuynhW').value) || 0;
             const huynhHeight = parseFloat(document.getElementById('inputHuynhH').value) || 0;
+            const hideAutoDim = document.getElementById('hideAutoDim')?.checked;
 
             if (W <= 0 || H <= 0 || huynhWidth <= 0 || huynhHeight <= 0) return;
 
@@ -320,7 +398,7 @@
             const thongThuyH = H - frameTop;
             
             const leafW = thongThuyW - (leafGap * 2);
-            const leafH = thongThuyH - leafGap - 5; // Khe hở trên là leafGap(3), khe hở chân là 5
+            const leafH = thongThuyH - leafGap - 5; 
             
             const doCanhNgang = (leafW - huynhWidth) / 2;
             const doCanhDoc = (leafH - huynhHeight) / 2;
@@ -333,7 +411,7 @@
             document.getElementById('resDoDoc').innerText = doCanhDoc.toFixed(1) + ' mm';
 
             const svg = document.getElementById('doorSvg');
-            svg.innerHTML = '';
+            if(!isPreview) svg.innerHTML = '';
             
             const startX = paddingX;
             const startY = paddingY;
@@ -342,8 +420,8 @@
             let bboxW = originalBoundingBox.width;
             let bboxH = originalBoundingBox.height;
             if (bboxW === 0 || bboxH === 0) {
-                bboxW = 221.29; // Fallback to H1 default width
-                bboxH = 722.324; // Fallback to H1 default height
+                bboxW = 221.29; 
+                bboxH = 722.324; 
             }
             
             const scaleX = huynhWidth / bboxW;
@@ -366,17 +444,6 @@
                     </g>
                 `;
 
-                const dimOffset = 60;
-
-                const drawDimRed = (x1, y1, x2, y2, text, textX, textY) => {
-                    return `
-                        <line class="dim-line-red" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" />
-                        <line class="dim-line-red" x1="${x1}" y1="${y1-15}" x2="${x1}" y2="${y1+15}" />
-                        <line class="dim-line-red" x1="${x2}" y1="${y2-15}" x2="${x2}" y2="${y2+15}" />
-                        <text class="dim-text-red" x="${textX}" y="${textY}">${text}</text>
-                    `;
-                };
-
                 const drawDimBlue = (x1, y1, x2, y2, text, textX, textY, horizontal = true) => {
                     const tickLen = 10;
                     let t1x1, t1y1, t1x2, t1y2, t2x1, t2y1, t2x2, t2y2;
@@ -397,19 +464,22 @@
                     `;
                 };
 
-                content += drawDimRed(
-                    startX, startY - dimOffset, 
-                    startX + W, startY - dimOffset, 
-                    `W = ${W}`, 
-                    startX + W/2, startY - dimOffset - 20
-                );
+            if (!hideAutoDim) {
+                const dimOffset = 50;
+                content += `
+                    <line class="dim-line" x1="${startX}" y1="${startY - dimOffset - 10}" x2="${startX}" y2="${startY}" />
+                    <line class="dim-line" x1="${startX + W}" y1="${startY - dimOffset - 10}" x2="${startX + W}" y2="${startY}" />
+                    <line class="dim-line" x1="${startX}" y1="${startY - dimOffset}" x2="${startX + W}" y2="${startY - dimOffset}" />
+                    <text class="dim-text-red" x="${startX + W/2}" y="${startY - dimOffset - 10}">W = ${W}</text>
+                `;
 
                 content += `
-                    <line class="dim-line-red" x1="${startX - dimOffset}" y1="${startY}" x2="${startX - dimOffset}" y2="${startY + H}" />
-                    <line class="dim-line-red" x1="${startX - dimOffset - 15}" y1="${startY}" x2="${startX - dimOffset + 15}" y2="${startY}" />
-                    <line class="dim-line-red" x1="${startX - dimOffset - 15}" y1="${startY + H}" x2="${startX - dimOffset + 15}" y2="${startY + H}" />
+                    <line class="dim-line" x1="${startX - dimOffset - 10}" y1="${startY}" x2="${startX}" y2="${startY}" />
+                    <line class="dim-line" x1="${startX - dimOffset - 10}" y1="${startY + H}" x2="${startX}" y2="${startY + H}" />
+                    <line class="dim-line" x1="${startX - dimOffset}" y1="${startY}" x2="${startX - dimOffset}" y2="${startY + H}" />
                     <text class="dim-text-red" x="${startX - dimOffset - 25}" y="${startY + H/2}" transform="rotate(-90 ${startX - dimOffset - 25},${startY + H/2})">H = ${H}</text>
                 `;
+            }
 
                 const cy = leafY + leafH/2;
                 content += drawDimBlue(
@@ -490,23 +560,30 @@
                 }
             
             // Vẽ thêm 2 mặt cắt bên cạnh và bên dưới
-            content += drawSections(W, H);
+            content += drawSections(W, H, hideAutoDim);
 
-            // Cập nhật viewBox để bao trọn cả 3 hình chiếu
-            const canvasW = W + CONSTANTS.paddingX * 2 + 400 + CONSTANTS.frameDepth;
-            const canvasH = H + CONSTANTS.paddingY * 2 + 400 + CONSTANTS.frameDepth;
-            
-            if (vbW === 0 || vbH === 0) {
-                vbX = 0;
-                vbY = 0;
-                vbW = canvasW;
-                vbH = canvasH;
+            // Vẽ Custom Dims
+            for (let dim of customDims) {
+                content += drawDimGlobal(dim.x1, dim.y1, dim.x2, dim.y2, dim.text, dim.textOffset, dim.vertical);
             }
-            svg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
+
+            // Chỉ cập nhật viewBox nếu không phải đang vẽ preview Dim
+            if (!isPreview) {
+                const canvasW = W + CONSTANTS.paddingX * 2 + 400 + CONSTANTS.frameDepth;
+                const canvasH = H + CONSTANTS.paddingY * 2 + 400 + CONSTANTS.frameDepth;
+                
+                if (vbW === 0 || vbH === 0) {
+                    vbX = 0;
+                    vbY = 0;
+                    vbW = canvasW;
+                    vbH = canvasH;
+                }
+                svg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
+            }
             svg.innerHTML = content;
         }
 
-        function drawSections(W, H) {
+        function drawSections(W, H, hideAutoDim) {
             let content = '';
             
             const t = 1.5; 
@@ -521,21 +598,6 @@
             const fW_front = 22.26; // Độ dày mép trong mặt trước
             const rD = 74.69; // Chiều sâu hèm từ mặt sau
             const rW = 12.74; // Độ sâu bậc hèm (rabbet step)
-
-            const drawDim = (x1, y1, x2, y2, text, textOffset, vertical = false) => {
-                const tick = 10;
-                let html = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ef4444" stroke-width="1.5" />`;
-                if (vertical) {
-                    html += `<line x1="${x1 - tick}" y1="${y1}" x2="${x1 + tick}" y2="${y1}" stroke="#ef4444" stroke-width="1.5" />`;
-                    html += `<line x1="${x2 - tick}" y1="${y2}" x2="${x2 + tick}" y2="${y2}" stroke="#ef4444" stroke-width="1.5" />`;
-                    html += `<text x="${x1 + textOffset}" y="${(y1 + y2)/2}" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 ${x1 + textOffset},${(y1 + y2)/2})" fill="#ef4444" font-size="14" font-weight="bold">${text}</text>`;
-                } else {
-                    html += `<line x1="${x1}" y1="${y1 - tick}" x2="${x1}" y2="${y1 + tick}" stroke="#ef4444" stroke-width="1.5" />`;
-                    html += `<line x1="${x2}" y1="${y2 - tick}" x2="${x2}" y2="${y2 + tick}" stroke="#ef4444" stroke-width="1.5" />`;
-                    html += `<text x="${(x1 + x2)/2}" y="${y1 + textOffset}" text-anchor="middle" dominant-baseline="middle" fill="#ef4444" font-size="14" font-weight="bold">${text}</text>`;
-                }
-                return html;
-            };
 
             const getFramePath = (x, y, mode) => {
                 const scaleX = fD / 4.494;
@@ -579,9 +641,11 @@
             content += getHollowRect(leafX, leafY, leafW, leafD);
 
             // Dim Mặt cắt ngang
-            content += drawDim(startX, startY - 30, startX + W, startY - 30, W, -15);
-            content += drawDim(startX + fW, startY + fD + 30, startX + W - fW, startY + fD + 30, (W - fW*2).toFixed(1), 15); // Thông thuỷ
-            content += drawDim(leafX, leafY + leafD + 60, leafX + leafW, leafY + leafD + 60, leafW.toFixed(1), 15); // Chiều rộng cánh
+            if (!hideAutoDim) {
+                content += drawDimGlobal(startX, startY - 30, startX + W, startY - 30, W, -15);
+                content += drawDimGlobal(startX + fW, startY + fD + 30, startX + W - fW, startY + fD + 30, (W - fW*2).toFixed(1), 15); // Thông thuỷ
+                content += drawDimGlobal(leafX, leafY + leafD + 60, leafX + leafW, leafY + leafD + 60, leafW.toFixed(1), 15); // Chiều rộng cánh
+            }
 
             // --- BẢN VẼ MẶT CẮT DỌC (A-A) (Hình chiếu cạnh) ---
             const vStartX = CONSTANTS.paddingX + W + 250;
@@ -600,9 +664,11 @@
             content += `<line x1="${vStartX - 50}" y1="${vStartY + H}" x2="${vStartX + fD + 50}" y2="${vStartY + H}" stroke="#94a3b8" stroke-width="3"/>`;
 
             // Dim Mặt cắt dọc
-            content += drawDim(vStartX - 30, vStartY, vStartX - 30, vStartY + H, H, -15, true);
-            content += drawDim(vStartX + fD + 30, vStartY + fT, vStartX + fD + 30, vStartY + H, (H - fT).toFixed(1), 15, true); // Thông thuỷ
-            content += drawDim(vStartX + fD + 60, vLeafY, vStartX + fD + 60, vLeafY + vLeafH, vLeafH.toFixed(1), 15, true); // Chiều cao cánh
+            if (!hideAutoDim) {
+                content += drawDimGlobal(vStartX - 30, vStartY, vStartX - 30, vStartY + H, H, -15, true);
+                content += drawDimGlobal(vStartX + fD + 30, vStartY + fT, vStartX + fD + 30, vStartY + H, (H - fT).toFixed(1), 15, true); // Thông thuỷ
+                content += drawDimGlobal(vStartX + fD + 60, vLeafY, vStartX + fD + 60, vLeafY + vLeafH, vLeafH.toFixed(1), 15, true); // Chiều cao cánh
+            }
 
             // Tiêu đề
             content += `<text x="${startX + W/2}" y="${startY + fD + 100}" text-anchor="middle" font-family="monospace" font-size="20" font-weight="bold" fill="#64748b">MẶT CẮT NGANG B-B</text>`;
