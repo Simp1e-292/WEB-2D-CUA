@@ -142,6 +142,7 @@
         if (typeof svgData !== 'undefined') {
             const sortedKeys = Object.keys(svgData).sort();
             for (let filename of sortedKeys) {
+                if (filename === 'KHUNG.svg') continue; // Bỏ qua biên dạng khuôn, không nạp vào danh sách lõi
                 const option = document.createElement('option');
                 option.value = filename;
                 option.textContent = filename.replace(/\.svg$/i, '');
