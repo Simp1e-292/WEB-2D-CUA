@@ -3,8 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parametric 2D Door Drawing</title>
+    <title>Parametric Door - 2D Web App</title>
     <link rel="stylesheet" href="index.css">
+    <script>
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            const errDiv = document.createElement('div');
+            errDiv.style = "position:absolute; z-index:9999; top: 10px; left: 10px; background: rgba(255,0,0,0.9); color: white; padding: 20px; font-size: 18px; border-radius: 8px; max-width: 80%; word-wrap: break-word;";
+            errDiv.innerHTML = `<strong>Lỗi JavaScript:</strong><br>${msg}<br>Tại dòng: ${lineNo}<br><pre>${error && error.stack ? error.stack : ''}</pre>`;
+            document.body.appendChild(errDiv);
+            return false;
+        };
+    </script>
 </head>
 <body>
 
@@ -145,6 +154,19 @@
 
         let currentPanelSvgContent = '';
         let originalBoundingBox = { x: 0, y: 0, width: 0, height: 0 };
+        
+        // --- State Variables ---
+        let isDimMode = false;
+        let dimState = 0; // 0: chờ click 1, 1: chờ click 2, 2: chờ click offset
+        let p1 = null;
+        let p2 = null;
+        let customDims = JSON.parse(localStorage.getItem('customDims')) || [];
+        
+        let isPanning = false;
+        let startPanX = 0;
+        let startPanY = 0;
+        let vbX = 0, vbY = 0, vbW = 0, vbH = 0;
+        // -----------------------
 
         const drawDimGlobal = (x1, y1, x2, y2, text, textOffset, vertical = false) => {
             const tick = 10;
