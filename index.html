@@ -105,13 +105,13 @@
         const CONSTANTS = {
             frameTop: 35,    
             frameSide: 35,
-            leafGap: 5,
+            leafGap: 3,
             paddingX: 200,
             paddingY: 200,
             frameDepth: 130,
             leafDepth: 50,
             rabbetStep: 15,
-            rabbetDepth: 57
+            rabbetDepth: 80 // frameDepth(130) - leafDepth(50) = 80 để mặt cánh phẳng mặt khuôn
         };
 
         let currentPanelSvgContent = '';
@@ -307,7 +307,7 @@
             const thongThuyH = H - frameTop;
             
             const leafW = thongThuyW - (leafGap * 2);
-            const leafH = thongThuyH - leafGap;
+            const leafH = thongThuyH - leafGap - 5; // Khe hở trên là leafGap(3), khe hở chân là 5
             
             const doCanhNgang = (leafW - huynhWidth) / 2;
             const doCanhDoc = (leafH - huynhHeight) / 2;
@@ -497,14 +497,14 @@
             let content = '';
             
             const t = 1.5; // chiều dày nhôm
-            const fW = CONSTANTS.frameSide; // 50
-            const fT = CONSTANTS.frameTop;  // 50
-            const fD = CONSTANTS.frameDepth; // 130
-            const rW = CONSTANTS.rabbetStep; // 15
-            const rD = CONSTANTS.rabbetDepth; // 57
-            const gap = 3; // 3mm khe hở
-            const leafD = CONSTANTS.leafDepth; // 50
-            const inset = 2; // cánh lọt lòng 2mm so với mép ngoài
+            const fW = CONSTANTS.frameSide; 
+            const fT = CONSTANTS.frameTop;  
+            const fD = CONSTANTS.frameDepth; 
+            const rW = CONSTANTS.rabbetStep; 
+            const rD = CONSTANTS.rabbetDepth; 
+            const gap = CONSTANTS.leafGap; // 3mm khe hở
+            const leafD = CONSTANTS.leafDepth; 
+            const bottomGap = 5; // 5mm khe hở chân
 
             const drawDim = (x1, y1, x2, y2, text, textOffset, vertical = false) => {
                 const tick = 10;
@@ -556,7 +556,7 @@
             // Cánh
             const leafX = startX + fW - rW + gap;
             const leafW = W - (fW - rW)*2 - gap*2;
-            const leafY = startY + inset;
+            const leafY = startY + rD; // Mặt sau cánh tựa vào hèm (y + rD). Do rD = fD - leafD nên mặt trước (y + rD + leafD) sẽ bằng (y + fD)
             content += getHollowRect(leafX, leafY, leafW, leafD);
 
             // Dim Mặt cắt ngang
@@ -573,8 +573,8 @@
             
             // Cánh
             const vLeafY = vStartY + fT - rW + gap;
-            const vLeafH = H - (fT - rW) - gap - 5; // Trừ khe hở dưới chân 5mm
-            const vLeafX = vStartX + fD - leafD - inset;
+            const vLeafH = H - (fT - rW) - gap - bottomGap; // Trừ khe hở dưới chân 5mm
+            const vLeafX = vStartX + rD; // Bằng mặt khuôn
             content += getHollowRect(vLeafX, vLeafY, leafD, vLeafH);
 
             // Nền đất
