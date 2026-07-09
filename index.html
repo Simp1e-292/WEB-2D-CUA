@@ -103,8 +103,8 @@
     <script src="svgData.js"></script>
     <script>
         const CONSTANTS = {
-            frameTop: 50,    
-            frameSide: 50,
+            frameTop: 35,    
+            frameSide: 35,
             leafGap: 5,
             paddingX: 200,
             paddingY: 200,
@@ -217,6 +217,82 @@
                 }
         });
 
+        let vbX = 0, vbY = 0, vbW = 0, vbH = 0;
+        let isPanning = false;
+        let startPanX = 0, startPanY = 0;
+        const doorSvg = document.getElementById('doorSvg');
+        doorSvg.style.cursor = 'grab';
+
+        doorSvg.addEventListener('mousedown', (e) => {
+            isPanning = true;
+            startPanX = e.clientX;
+            startPanY = e.clientY;
+            doorSvg.style.cursor = 'grabbing';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isPanning) return;
+            e.preventDefault();
+            const rect = doorSvg.getBoundingClientRect();
+            // preserveAspectRatio="xMidYMid meet" (default)
+            const ratio = Math.max(vbW / rect.width, vbH / rect.height);
+            const dx = (e.clientX - startPanX) * ratio;
+            const dy = (e.clientY - startPanY) * ratio;
+            
+            vbX -= dx;
+            vbY -= dy;
+            doorSvg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
+            
+            startPanX = e.clientX;
+            startPanY = e.clientY;
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (isPanning) {
+                isPanning = false;
+                doorSvg.style.cursor = 'grab';
+            }
+        });
+
+        doorSvg.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomSensitivity = 0.1;
+            const delta = e.deltaY > 0 ? 1 : -1; // cuộn xuống = zoom out = tăng vbW
+            
+            const rect = doorSvg.getBoundingClientRect();
+            const ratio = Math.max(vbW / rect.width, vbH / rect.height);
+            
+            // Toạ độ chuột trong không gian SVG
+            const mouseX = vbX + (e.clientX - rect.left) * ratio;
+            const mouseY = vbY + (e.clientY - rect.top) * ratio;
+            
+            const zoomFactor = 1 + delta * zoomSensitivity;
+            const newVbW = vbW * zoomFactor;
+            const newVbH = vbH * zoomFactor;
+            
+            // Giới hạn zoom
+            if (newVbW > 100 && newVbW < 20000) {
+                vbX = mouseX - (mouseX - vbX) * zoomFactor;
+                vbY = mouseY - (mouseY - vbY) * zoomFactor;
+                vbW = newVbW;
+                vbH = newVbH;
+                doorSvg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
+            }
+        }, { passive: false });
+
+        doorSvg.addEventListener('dblclick', () => {
+            // Reset view
+            const W = parseFloat(document.getElementById('inputW').value) || 0;
+            const H = parseFloat(document.getElementById('inputH').value) || 0;
+            const canvasW = W + CONSTANTS.paddingX * 2 + 400 + CONSTANTS.frameDepth;
+            const canvasH = H + CONSTANTS.paddingY * 2 + 400 + CONSTANTS.frameDepth;
+            vbX = 0;
+            vbY = 0;
+            vbW = canvasW;
+            vbH = canvasH;
+            doorSvg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
+        });
+
         function drawDoor() {
             const W = parseFloat(document.getElementById('inputW').value) || 0;
             const H = parseFloat(document.getElementById('inputH').value) || 0;
@@ -265,9 +341,9 @@
             const h1TargetX = leafX + doCanhNgang;
             const h1TargetY = leafY + doCanhDoc;
 
-                content += `<rect class="door-fill" x="${startX}" y="${startY}" width="${W}" height="${frameTop}" />`;
-                content += `<rect class="door-fill" x="${startX}" y="${startY + frameTop}" width="${frameSide}" height="${H - frameTop}" />`;
-                content += `<rect class="door-fill" x="${startX + W - frameSide}" y="${startY + frameTop}" width="${frameSide}" height="${H - frameTop}" />`;
+                content += `<rect class="door-fill" x="${startX}" y="${startY}" width="${frameSide}" height="${H}" />`;
+                content += `<rect class="door-fill" x="${startX + W - frameSide}" y="${startY}" width="${frameSide}" height="${H}" />`;
+                content += `<rect class="door-fill" x="${startX + frameSide}" y="${startY}" width="${W - frameSide * 2}" height="${frameTop}" />`;
 
                 content += `<rect class="door-fill" x="${leafX}" y="${leafY}" width="${leafW}" height="${leafH}" />`;
 
@@ -406,7 +482,14 @@
             // Cập nhật viewBox để bao trọn cả 3 hình chiếu
             const canvasW = W + CONSTANTS.paddingX * 2 + 400 + CONSTANTS.frameDepth;
             const canvasH = H + CONSTANTS.paddingY * 2 + 400 + CONSTANTS.frameDepth;
-            svg.setAttribute('viewBox', `0 0 ${canvasW} ${canvasH}`);
+            
+            if (vbW === 0 || vbH === 0) {
+                vbX = 0;
+                vbY = 0;
+                vbW = canvasW;
+                vbH = canvasH;
+            }
+            svg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
             svg.innerHTML = content;
         }
 
