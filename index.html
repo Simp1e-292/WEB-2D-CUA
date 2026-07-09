@@ -579,9 +579,9 @@
             content += getHollowRect(leafX, leafY, leafW, leafD);
 
             // Dim Mặt cắt ngang
-            content += drawDim(startX, startY - 80, startX + W, startY - 80, W, -40);
-            content += drawDim(startX + fW, startY + fD + 80, startX + W - fW, startY + fD + 80, (W - fW*2).toFixed(1), 40); // Thông thuỷ
-            content += drawDim(leafX, leafY + leafD + 180, leafX + leafW, leafY + leafD + 180, leafW.toFixed(1), 40); // Chiều rộng cánh
+            content += drawDim(startX, startY - 100, startX + W, startY - 100, W, -60);
+            content += drawDim(startX + fW, startY + fD + 100, startX + W - fW, startY + fD + 100, (W - fW*2).toFixed(1), 60); // Thông thuỷ
+            content += drawDim(leafX, leafY + leafD + 240, leafX + leafW, leafY + leafD + 240, leafW.toFixed(1), 60); // Chiều rộng cánh
 
             // --- BẢN VẼ MẶT CẮT DỌC (A-A) (Hình chiếu cạnh) ---
             const vStartX = CONSTANTS.paddingX + W + 250;
@@ -600,9 +600,9 @@
             content += `<line x1="${vStartX - 50}" y1="${vStartY + H}" x2="${vStartX + fD + 50}" y2="${vStartY + H}" stroke="#94a3b8" stroke-width="3"/>`;
 
             // Dim Mặt cắt dọc
-            content += drawDim(vStartX - 80, vStartY, vStartX - 80, vStartY + H, H, -40, true);
-            content += drawDim(vStartX + fD + 80, vStartY + fT, vStartX + fD + 80, vStartY + H, (H - fT).toFixed(1), 40, true); // Thông thuỷ
-            content += drawDim(vStartX + fD + 180, vLeafY, vStartX + fD + 180, vLeafY + vLeafH, vLeafH.toFixed(1), 40, true); // Chiều cao cánh
+            content += drawDim(vStartX - 100, vStartY, vStartX - 100, vStartY + H, H, -60, true);
+            content += drawDim(vStartX + fD + 100, vStartY + fT, vStartX + fD + 100, vStartY + H, (H - fT).toFixed(1), 60, true); // Thông thuỷ
+            content += drawDim(vStartX + fD + 240, vLeafY, vStartX + fD + 240, vLeafY + vLeafH, vLeafH.toFixed(1), 60, true); // Chiều cao cánh
 
             // Tiêu đề
             content += `<text x="${startX + W/2}" y="${startY + fD + 100}" text-anchor="middle" font-family="monospace" font-size="20" font-weight="bold" fill="#64748b">MẶT CẮT NGANG B-B</text>`;

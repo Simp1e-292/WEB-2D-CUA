@@ -181,7 +181,7 @@ svg {
 
 .dim-text-red {
     fill: var(--dim-red);
-    font-size: 48px;
+    font-size: 72px;
     font-weight: 600;
     text-anchor: middle;
 }
@@ -195,7 +195,7 @@ svg {
 
 .dim-text-blue {
     fill: var(--dim-blue);
-    font-size: 40px;
+    font-size: 56px;
     font-weight: 600;
     text-anchor: middle;
     dominant-baseline: middle;
