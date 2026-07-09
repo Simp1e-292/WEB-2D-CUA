@@ -109,10 +109,37 @@
             paddingX: 200,
             paddingY: 200,
             frameDepth: 130,
-            leafDepth: 50,
-            rabbetStep: 15,
-            rabbetDepth: 80 // frameDepth(130) - leafDepth(50) = 80 để mặt cánh phẳng mặt khuôn
+            leafDepth: 50
         };
+
+        const khungProcessedSvg = `<path d="M 145.911 399.805C 145.911 399.864 145.959 399.912 146.018 399.912" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 148.386 399.912L 146.018 399.912" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 148.386 399.912C 148.445 399.912 148.493 399.864 148.493 399.805" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 148.493 399.476L 148.493 399.805" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 148.56 399.409C 148.523 399.409 148.493 399.439 148.493 399.476" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 150.297 399.409L 148.56 399.409" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 150.297 399.409C 150.357 399.409 150.405 399.361 150.405 399.302" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 150.405 398.343L 150.405 399.302" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 150.405 398.343C 150.405 398.284 150.357 398.236 150.297 398.236" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 149.801 398.236L 150.297 398.236" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 149.801 398.236L 149.801 398.276" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 149.801 398.276L 150.297 398.276" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 150.364 398.343C 150.364 398.306 150.334 398.276 150.297 398.276" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 150.364 398.343L 150.364 399.302" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 150.297 399.369C 150.334 399.369 150.364 399.339 150.364 399.302" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 150.297 399.369L 148.56 399.369" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 148.56 399.369C 148.501 399.369 148.453 399.417 148.453 399.476" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 148.453 399.476L 148.453 399.805" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 148.386 399.872C 148.423 399.872 148.453 399.842 148.453 399.805" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 148.386 399.872L 146.018 399.872" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 145.951 399.805C 145.951 399.842 145.981 399.872 146.018 399.872" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 145.911 398.343L 145.911 399.805" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 146.018 398.236C 145.959 398.236 145.911 398.284 145.911 398.343" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 146.514 398.236L 146.018 398.236" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 146.514 398.236L 146.514 398.276" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 146.514 398.276L 146.018 398.276" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 146.018 398.276C 145.981 398.276 145.951 398.306 145.951 398.343" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+  <path d="M 145.951 398.343L 145.951 399.805" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>`;
 
         let currentPanelSvgContent = '';
         let originalBoundingBox = { x: 0, y: 0, width: 0, height: 0 };
@@ -496,15 +523,18 @@
         function drawSections(W, H) {
             let content = '';
             
-            const t = 1.5; // chiều dày nhôm
+            const t = 1.5; 
             const fW = CONSTANTS.frameSide; 
             const fT = CONSTANTS.frameTop;  
             const fD = CONSTANTS.frameDepth; 
-            const rW = CONSTANTS.rabbetStep; 
-            const rD = CONSTANTS.rabbetDepth; 
-            const gap = CONSTANTS.leafGap; // 3mm khe hở
+            const gap = CONSTANTS.leafGap; 
             const leafD = CONSTANTS.leafDepth; 
-            const bottomGap = 5; // 5mm khe hở chân
+            const bottomGap = 5; 
+
+            // Thông số tính toán từ KHUNG.svg
+            const fW_front = 22.26; // Độ dày mép trong mặt trước
+            const rD = 74.69; // Chiều sâu hèm từ mặt sau
+            const rW = 12.74; // Độ sâu bậc hèm (rabbet step)
 
             const drawDim = (x1, y1, x2, y2, text, textOffset, vertical = false) => {
                 const tick = 10;
@@ -522,19 +552,21 @@
             };
 
             const getFramePath = (x, y, mode) => {
-                let html = '';
-                const lip = 15;
-                if (mode === 'top') {
-                    html += `<path d="M ${x+lip} ${y} L ${x} ${y} L ${x} ${y+fW} L ${x+fD-rD} ${y+fW} L ${x+fD-rD} ${y+fW-rW} L ${x+fD} ${y+fW-rW} L ${x+fD} ${y} L ${x+fD-lip} ${y}" fill="none" stroke="#0ea5e9" stroke-width="1.5"/>`;
-                    html += `<path d="M ${x+lip} ${y+t} L ${x+t} ${y+t} L ${x+t} ${y+fW-t} L ${x+fD-rD-t} ${y+fW-t} L ${x+fD-rD-t} ${y+fW-rW-t} L ${x+fD-t} ${y+fW-rW-t} L ${x+fD-t} ${y+t} L ${x+fD-lip} ${y+t}" fill="none" stroke="#0ea5e9" stroke-width="1.5"/>`;
-                } else if (mode === 'left') {
-                    html += `<path d="M ${x} ${y+lip} L ${x} ${y} L ${x+fW-rW} ${y} L ${x+fW-rW} ${y+rD} L ${x+fW} ${y+rD} L ${x+fW} ${y+fD} L ${x} ${y+fD} L ${x} ${y+fD-lip}" fill="none" stroke="#0ea5e9" stroke-width="1.5"/>`;
-                    html += `<path d="M ${x+t} ${y+lip} L ${x+t} ${y+t} L ${x+fW-rW-t} ${y+t} L ${x+fW-rW-t} ${y+rD+t} L ${x+fW-t} ${y+rD+t} L ${x+fW-t} ${y+fD-t} L ${x+t} ${y+fD-t} L ${x+t} ${y+fD-lip}" fill="none" stroke="#0ea5e9" stroke-width="1.5"/>`;
+                const scaleX = fD / 4.494;
+                const scaleY = fW / 1.676;
+                const origX = 145.911;
+                const origY = 398.236;
+                
+                let matrix = '';
+                if (mode === 'left') {
+                    matrix = `matrix(0, ${scaleX}, ${scaleY}, 0, ${x}, ${y})`;
                 } else if (mode === 'right') {
-                    html += `<path d="M ${x+fW} ${y+lip} L ${x+fW} ${y} L ${x+rW} ${y} L ${x+rW} ${y+rD} L ${x} ${y+rD} L ${x} ${y+fD} L ${x+fW} ${y+fD} L ${x+fW} ${y+fD-lip}" fill="none" stroke="#0ea5e9" stroke-width="1.5"/>`;
-                    html += `<path d="M ${x+fW-t} ${y+lip} L ${x+fW-t} ${y+t} L ${x+rW+t} ${y+t} L ${x+rW+t} ${y+rD+t} L ${x+t} ${y+rD+t} L ${x+t} ${y+fD-t} L ${x+fW-t} ${y+fD-t} L ${x+fW-t} ${y+fD-lip}" fill="none" stroke="#0ea5e9" stroke-width="1.5"/>`;
+                    matrix = `matrix(0, ${scaleX}, ${-scaleY}, 0, ${x + fW}, ${y})`;
+                } else if (mode === 'top') {
+                    matrix = `matrix(${scaleX}, 0, 0, ${scaleY}, ${x}, ${y})`;
                 }
-                return html;
+                
+                return `<g transform="${matrix} translate(${-origX}, ${-origY})">${khungProcessedSvg}</g>`;
             };
 
             const getHollowRect = (x, y, w, h) => {
@@ -554,14 +586,15 @@
             content += getFramePath(startX + W - fW, startY, 'right');
             
             // Cánh
-            const leafX = startX + fW - rW + gap;
-            const leafW = W - (fW - rW)*2 - gap*2;
-            const leafY = startY + rD; // Mặt sau cánh tựa vào hèm (y + rD). Do rD = fD - leafD nên mặt trước (y + rD + leafD) sẽ bằng (y + fD)
+            // Mép mặt trước của khuôn là fW_front. Khoảng cách (gap) 3mm tính từ fW_front.
+            const leafX = startX + fW_front + gap;
+            const leafW = W - fW_front*2 - gap*2;
+            const leafY = startY + fD - leafD; // Cánh phẳng với mặt trước khuôn (y + fD)
             content += getHollowRect(leafX, leafY, leafW, leafD);
 
             // Dim Mặt cắt ngang
             content += drawDim(startX, startY - 30, startX + W, startY - 30, W, -15);
-            content += drawDim(startX + fW - rW, startY + fD + 30, startX + W - (fW - rW), startY + fD + 30, W - (fW - rW)*2, 15); // Thông thuỷ
+            content += drawDim(startX + fW, startY + fD + 30, startX + W - fW, startY + fD + 30, (W - fW*2).toFixed(1), 15); // Thông thuỷ
             content += drawDim(leafX, leafY + leafD + 60, leafX + leafW, leafY + leafD + 60, leafW.toFixed(1), 15); // Chiều rộng cánh
 
             // --- BẢN VẼ MẶT CẮT DỌC (A-A) (Hình chiếu cạnh) ---
@@ -572,9 +605,9 @@
             content += getFramePath(vStartX, vStartY, 'top');
             
             // Cánh
-            const vLeafY = vStartY + fT - rW + gap;
-            const vLeafH = H - (fT - rW) - gap - bottomGap; // Trừ khe hở dưới chân 5mm
-            const vLeafX = vStartX + rD; // Bằng mặt khuôn
+            const vLeafY = vStartY + fW_front + gap;
+            const vLeafH = H - fW_front - gap - bottomGap; // Trừ khe hở dưới chân 5mm
+            const vLeafX = vStartX + fD - leafD; // Bằng mặt khuôn phía trước
             content += getHollowRect(vLeafX, vLeafY, leafD, vLeafH);
 
             // Nền đất
@@ -582,7 +615,7 @@
 
             // Dim Mặt cắt dọc
             content += drawDim(vStartX - 30, vStartY, vStartX - 30, vStartY + H, H, -15, true);
-            content += drawDim(vStartX + fD + 30, vStartY + fT - rW, vStartX + fD + 30, vStartY + H, H - (fT - rW), 15, true); // Thông thuỷ
+            content += drawDim(vStartX + fD + 30, vStartY + fT, vStartX + fD + 30, vStartY + H, (H - fT).toFixed(1), 15, true); // Thông thuỷ
             content += drawDim(vStartX + fD + 60, vLeafY, vStartX + fD + 60, vLeafY + vLeafH, vLeafH.toFixed(1), 15, true); // Chiều cao cánh
 
             // Tiêu đề
