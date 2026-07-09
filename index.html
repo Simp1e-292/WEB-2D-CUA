@@ -523,16 +523,16 @@
             const rW = 12.74; // Độ sâu bậc hèm (rabbet step)
 
             const drawDim = (x1, y1, x2, y2, text, textOffset, vertical = false) => {
-                const tick = 10;
-                let html = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ef4444" stroke-width="1.5" />`;
+                const tick = 15;
+                let html = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ef4444" stroke-width="2" />`;
                 if (vertical) {
-                    html += `<line x1="${x1 - tick}" y1="${y1}" x2="${x1 + tick}" y2="${y1}" stroke="#ef4444" stroke-width="1.5" />`;
-                    html += `<line x1="${x2 - tick}" y1="${y2}" x2="${x2 + tick}" y2="${y2}" stroke="#ef4444" stroke-width="1.5" />`;
-                    html += `<text x="${x1 + textOffset}" y="${(y1 + y2)/2}" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 ${x1 + textOffset},${(y1 + y2)/2})" fill="#ef4444" font-size="36" font-weight="bold">${text}</text>`;
+                    html += `<line x1="${x1 - tick}" y1="${y1}" x2="${x1 + tick}" y2="${y1}" stroke="#ef4444" stroke-width="2" />`;
+                    html += `<line x1="${x2 - tick}" y1="${y2}" x2="${x2 + tick}" y2="${y2}" stroke="#ef4444" stroke-width="2" />`;
+                    html += `<text x="${x1 + textOffset}" y="${(y1 + y2)/2}" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 ${x1 + textOffset},${(y1 + y2)/2})" fill="#ef4444" font-size="72" font-weight="bold">${text}</text>`;
                 } else {
-                    html += `<line x1="${x1}" y1="${y1 - tick}" x2="${x1}" y2="${y1 + tick}" stroke="#ef4444" stroke-width="1.5" />`;
-                    html += `<line x1="${x2}" y1="${y2 - tick}" x2="${x2}" y2="${y2 + tick}" stroke="#ef4444" stroke-width="1.5" />`;
-                    html += `<text x="${(x1 + x2)/2}" y="${y1 + textOffset}" text-anchor="middle" dominant-baseline="middle" fill="#ef4444" font-size="36" font-weight="bold">${text}</text>`;
+                    html += `<line x1="${x1}" y1="${y1 - tick}" x2="${x1}" y2="${y1 + tick}" stroke="#ef4444" stroke-width="2" />`;
+                    html += `<line x1="${x2}" y1="${y2 - tick}" x2="${x2}" y2="${y2 + tick}" stroke="#ef4444" stroke-width="2" />`;
+                    html += `<text x="${(x1 + x2)/2}" y="${y1 + textOffset}" text-anchor="middle" dominant-baseline="middle" fill="#ef4444" font-size="72" font-weight="bold">${text}</text>`;
                 }
                 return html;
             };
@@ -579,9 +579,9 @@
             content += getHollowRect(leafX, leafY, leafW, leafD);
 
             // Dim Mặt cắt ngang
-            content += drawDim(startX, startY - 30, startX + W, startY - 30, W, -15);
-            content += drawDim(startX + fW, startY + fD + 30, startX + W - fW, startY + fD + 30, (W - fW*2).toFixed(1), 15); // Thông thuỷ
-            content += drawDim(leafX, leafY + leafD + 60, leafX + leafW, leafY + leafD + 60, leafW.toFixed(1), 15); // Chiều rộng cánh
+            content += drawDim(startX, startY - 80, startX + W, startY - 80, W, -40);
+            content += drawDim(startX + fW, startY + fD + 80, startX + W - fW, startY + fD + 80, (W - fW*2).toFixed(1), 40); // Thông thuỷ
+            content += drawDim(leafX, leafY + leafD + 180, leafX + leafW, leafY + leafD + 180, leafW.toFixed(1), 40); // Chiều rộng cánh
 
             // --- BẢN VẼ MẶT CẮT DỌC (A-A) (Hình chiếu cạnh) ---
             const vStartX = CONSTANTS.paddingX + W + 250;
@@ -600,9 +600,9 @@
             content += `<line x1="${vStartX - 50}" y1="${vStartY + H}" x2="${vStartX + fD + 50}" y2="${vStartY + H}" stroke="#94a3b8" stroke-width="3"/>`;
 
             // Dim Mặt cắt dọc
-            content += drawDim(vStartX - 30, vStartY, vStartX - 30, vStartY + H, H, -15, true);
-            content += drawDim(vStartX + fD + 30, vStartY + fT, vStartX + fD + 30, vStartY + H, (H - fT).toFixed(1), 15, true); // Thông thuỷ
-            content += drawDim(vStartX + fD + 60, vLeafY, vStartX + fD + 60, vLeafY + vLeafH, vLeafH.toFixed(1), 15, true); // Chiều cao cánh
+            content += drawDim(vStartX - 80, vStartY, vStartX - 80, vStartY + H, H, -40, true);
+            content += drawDim(vStartX + fD + 80, vStartY + fT, vStartX + fD + 80, vStartY + H, (H - fT).toFixed(1), 40, true); // Thông thuỷ
+            content += drawDim(vStartX + fD + 180, vLeafY, vStartX + fD + 180, vLeafY + vLeafH, vLeafH.toFixed(1), 40, true); // Chiều cao cánh
 
             // Tiêu đề
             content += `<text x="${startX + W/2}" y="${startY + fD + 100}" text-anchor="middle" font-family="monospace" font-size="20" font-weight="bold" fill="#64748b">MẶT CẮT NGANG B-B</text>`;
