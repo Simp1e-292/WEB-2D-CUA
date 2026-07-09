@@ -112,34 +112,19 @@
             leafDepth: 50
         };
 
-        const khungProcessedSvg = `<path d="M 145.911 399.805C 145.911 399.864 145.959 399.912 146.018 399.912" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 148.386 399.912L 146.018 399.912" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 148.386 399.912C 148.445 399.912 148.493 399.864 148.493 399.805" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 148.493 399.476L 148.493 399.805" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 148.56 399.409C 148.523 399.409 148.493 399.439 148.493 399.476" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 150.297 399.409L 148.56 399.409" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 150.297 399.409C 150.357 399.409 150.405 399.361 150.405 399.302" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 150.405 398.343L 150.405 399.302" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 150.405 398.343C 150.405 398.284 150.357 398.236 150.297 398.236" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 149.801 398.236L 150.297 398.236" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 149.801 398.236L 149.801 398.276" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 149.801 398.276L 150.297 398.276" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 150.364 398.343C 150.364 398.306 150.334 398.276 150.297 398.276" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 150.364 398.343L 150.364 399.302" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 150.297 399.369C 150.334 399.369 150.364 399.339 150.364 399.302" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 150.297 399.369L 148.56 399.369" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 148.56 399.369C 148.501 399.369 148.453 399.417 148.453 399.476" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 148.453 399.476L 148.453 399.805" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 148.386 399.872C 148.423 399.872 148.453 399.842 148.453 399.805" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 148.386 399.872L 146.018 399.872" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 145.951 399.805C 145.951 399.842 145.981 399.872 146.018 399.872" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 145.911 398.343L 145.911 399.805" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 146.018 398.236C 145.959 398.236 145.911 398.284 145.911 398.343" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 146.514 398.236L 146.018 398.236" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 146.514 398.236L 146.514 398.276" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 146.514 398.276L 146.018 398.276" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 146.018 398.276C 145.981 398.276 145.951 398.306 145.951 398.343" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-  <path d="M 145.951 398.343L 145.951 399.805" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>`;
+        let khungProcessedSvg = '';
+        if (typeof svgData !== 'undefined' && svgData['KHUNG.svg']) {
+            const text = decodeBase64Utf8(svgData['KHUNG.svg']);
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(text, "image/svg+xml");
+            const paths = doc.querySelectorAll('path');
+            paths.forEach(p => {
+                let d = p.getAttribute('d');
+                if (d) {
+                    khungProcessedSvg += `<path d="${d}" fill="none" stroke="#0ea5e9" stroke-width="1.5" vector-effect="non-scaling-stroke"/>\n`;
+                }
+            });
+        }
 
         let currentPanelSvgContent = '';
         let originalBoundingBox = { x: 0, y: 0, width: 0, height: 0 };
